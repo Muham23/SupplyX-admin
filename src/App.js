@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import "./responsive.css";
@@ -11,8 +12,12 @@ import SignUp from "./pages/SignUp";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import ProductUpload from "./pages/ProductUpload";
-import {ProtectedRoute,LoginLessRoute} from "./pages/ProtectedRoute"; // Import the ProtectedRoute component
-
+import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
+import { history } from "./_helpers";
+import { useNavigate,Navigate  } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { ProtectedRoute, LoginLessRoute } from "./pages/ProtectedRoute"; // Import the ProtectedRoute component
+import { ReactNotifications } from "react-notifications-component";
+import 'react-notifications-component/dist/theme.css';
 const MyContext = createContext();
 
 function App() {
@@ -47,7 +52,7 @@ function App() {
     } else {
       setIsLogin(false);
     }
-    
+
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -75,41 +80,45 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <MyContext.Provider value={values}>
-        {isHideSidebarAndHeader !== true && <Header />}
+    <>
+      <ReactNotifications />
+      <React.Suspense>
+        <HistoryRouter history={history}>
+          <MyContext.Provider value={values}>
+            {isHideSidebarAndHeader !== true && isLogin && <Header />}
 
-        <div className="main d-flex">
-          {isHideSidebarAndHeader !== true && (
-            <>
-              <div className={`sidebarOverlay d-none ${isOpenNav === true && 'show'}`} onClick={() => setIsOpenNav(false)}></div>
+            <div className="main d-flex">
+              {isHideSidebarAndHeader !== true && isLogin && (
+                <>
+                  <div className={`sidebarOverlay d-none ${isOpenNav && 'show'}`} onClick={() => setIsOpenNav(false)}></div>
+                  <div
+                    className={`sidebarWrapper ${isToggleSidebar ? "toggle" : ""} ${isOpenNav ? "open" : ""}`}
+                  >
+                    <Sidebar />
+                  </div>
+                </>
+              )}
+
               <div
-                className={`sidebarWrapper ${isToggleSidebar === true ? "toggle" : ""
-                  } ${isOpenNav === true ? "open" : ""}`}
+                className={`content ${isHideSidebarAndHeader ? "full" : ""} ${isToggleSidebar ? "toggle" : ""}`}
               >
-                <Sidebar />
+                <Routes>
+                  <Route path="/" element={<ProtectedRoute name={<Dashboard />} />} />
+                  <Route path="/login" element={<LoginLessRoute name={<Login />} />} />
+                  <Route path="/signUp" element={<LoginLessRoute name={<SignUp />} />} />
+                  <Route path="/dashboard" element={<ProtectedRoute name={<Dashboard />} />} />
+                  <Route path="/products" element={<ProtectedRoute name={<Products />} />} />
+                  <Route path="/product/details" element={<ProtectedRoute name={<ProductDetails />} />} />
+                  <Route path="/product/upload" element={<ProtectedRoute name={<ProductUpload />} />} />
+                  <Route path="*" element={<Navigate to={isLogin ? "/dashboard" : "/login"} replace />} />
+                </Routes>
               </div>
-            </>
-          )}
+            </div>
+          </MyContext.Provider>
+        </HistoryRouter>
 
-          <div
-            className={`content ${isHideSidebarAndHeader === true && "full"} ${isToggleSidebar === true ? "toggle" : ""
-              }`}
-          >
-            <Routes>
-              <Route path="/" exact element={isLogin ? <Dashboard /> : <Login />} />
-              <Route path="/login" exact  element={<LoginLessRoute  name={<Login />} />} />
-              <Route path="/signUp" exact  element={<LoginLessRoute  name={<SignUp />} />}/>
-              {/* Protecting multiple routes */}
-              <Route path="/dashboard" element={<ProtectedRoute  name={<Dashboard />} />} />
-              <Route path="/products" element={<ProtectedRoute  name={<Products />} />} />
-              <Route path="/product/details" element={<ProtectedRoute  name={<ProductDetails />} />} />
-              <Route path="/product/upload" element={<ProtectedRoute  name={<ProductUpload />} />} />
-            </Routes>
-          </div>
-        </div>
-      </MyContext.Provider>
-    </BrowserRouter>
+      </React.Suspense>
+    </>
   );
 }
 

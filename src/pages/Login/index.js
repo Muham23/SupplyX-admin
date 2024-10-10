@@ -8,12 +8,10 @@ import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import Button from '@mui/material/Button';
 import { Link } from "react-router-dom";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { userActions } from "../../actions";
+import { connect } from "react-redux";
 
-// import googleIcon from '../../assets/images/googleIcon.png';
-
-const Login = () => {
-    const navigate = useNavigate(); // Initialize navigate
+const Login = (props) => {
     const [inputIndex, setInputIndex] = useState(null);
     const [isShowPassword, setisShowPassword] = useState(false);
     const context = useContext(MyContext);
@@ -33,21 +31,15 @@ const Login = () => {
         }));
     };
 
-    // Handle form submission
     const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent default form submission behavior
-
+        e.preventDefault();
         const { email, password } = formData;
-        // Simple authentication check
-        if (email.trim() === 'patelbilal15@gmail.com' && password.trim() === 'Dolphin@21') {
-            localStorage.setItem('isLogin', true); // Store login status in local storage
-            alert("Successfully Logged In");
-            navigate('/dashboard'); // Redirect to dashboard
-        } else {
-            alert("Incorrect username or password");
+        const { dispatch } = props;
+        if (email && password) {
+            dispatch(userActions.login(email, password));
         }
     };
-
+    const { alert } = props;
     return (
         <>
             <img src={patern} className='loginPatern' />
@@ -56,6 +48,11 @@ const Login = () => {
                     <div className='logo text-center'>
                         <img src={Logo} width="200px" />
                         <h5 className='font-weight-bold' style={{ marginTop: '20px' }}>Login to SupplyX</h5>
+                        {alert.message && (
+                            <div className={`alert ${alert.type}`}>
+                                {alert.message}
+                            </div>
+                        )}
                     </div>
 
                     <div className='wrapper mt-3 card border'>
@@ -111,5 +108,13 @@ const Login = () => {
         </>
     )
 }
-
-export default Login;
+function mapStateToProps(state) {
+    const { loggingIn } = state.authentication;
+    const { alert } = state;
+    return {
+        loggingIn,
+        alert,
+    };
+}
+const connectedLoginPage = connect(mapStateToProps)(Login);
+export default connectedLoginPage;

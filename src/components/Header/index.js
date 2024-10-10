@@ -44,6 +44,7 @@ const Header = () => {
     };
     const handleLogout = () => {
         localStorage.setItem('isLogin',false);
+        localStorage.removeItem('user');
         navigate('/login',true); // Redirect to dashboard
     };
 

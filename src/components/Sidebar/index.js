@@ -27,6 +27,7 @@ const Sidebar = () => {
 
     const handleLogout = () => {
         localStorage.setItem('isLogin',false);
+        localStorage.removeItem('user');
         navigate('/login',false); // Redirect to dashboard
     };
 
@@ -59,7 +60,7 @@ const Sidebar = () => {
                             </ul>
                         </div>
                     </li>
-                    <li>
+                    {/* <li>
                         <Link to="/">
                             <Button className={`w-100 ${activeTab === 2 ? 'active' : ''}`} onClick={() => isOpenSubmenu(2)}>
                                 <span className='icon'><FaCartArrowDown /></span>
@@ -76,7 +77,7 @@ const Sidebar = () => {
                                 <span className='arrow'><FaAngleRight /></span>
                             </Button>
                         </Link>
-                    </li>
+                    </li> */}
                     {/* <li>
                         <Link to="/">
                             <Button className={`w-100 ${activeTab === 4 ? 'active' : ''}`} onClick={() => isOpenSubmenu(4)}>
@@ -86,7 +87,7 @@ const Sidebar = () => {
                             </Button>
                         </Link>
                     </li> */}
-                    <li>
+                    {/* <li>
                         <Link to="/">
                             <Button className={`w-100 ${activeTab === 5 ? 'active' : ''}`} onClick={() => isOpenSubmenu(5)}>
                                 <span className='icon'><IoIosSettings /></span>
@@ -94,7 +95,7 @@ const Sidebar = () => {
                                 <span className='arrow'><FaAngleRight /></span>
                             </Button>
                         </Link>
-                    </li>
+                    </li> */}
 {/* 
                     <li>
                         <Link to="/login">
